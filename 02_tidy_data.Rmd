@@ -202,7 +202,7 @@ phosphate.7 <- phosphate.6 %>%
   dplyr::mutate(lower = Average - SD,
                 upper = Average + SD)
 # View(phosphate.6)
-dplyr::select(phosphate.7, -lower, -upper)
+# dplyr::select(phosphate.7, -lower, -upper)
 ```
 
 ```{r}
@@ -244,24 +244,11 @@ Each question was worth a maximum of 5 points.
 (2) Calculate the average percent facility for each of the six exam questions (average percentage mark).  
 
 ```{r exercise}
-a <- readr::read_csv(file="data/SAQ_Exam_Results.csv")
-View(a)
-b <- tidyr::pivot_longer(a, -Cand.No, names_to = "Question", values_to = "Points")
-View(b)
-marks <- dplyr::group_by(b, Cand.No) %>% 
-  dplyr::summarise(Total_Points = sum(Points)) %>% 
-  dplyr::mutate(Mark = (Total_Points / 30)*100) %>% 
-  dplyr::mutate(Mark = round(Mark, 1)) %>% 
-  dplyr::mutate(Mark = paste0(Mark, "%"))
-marks
+# solutions here
 ```
 
 ```{r}
-facilities <- dplyr::group_by(b, Question) %>% 
-  dplyr::summarise(Average_Points = mean(Points)) %>% 
-  dplyr::mutate(Facility = (Average_Points / 5)*100) %>% 
-  dplyr::mutate(Facility = paste0(Facility, "%"))
-facilities
+# solutions here
 ```
 
 ## Session info  
