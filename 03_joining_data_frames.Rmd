@@ -1,0 +1,193 @@
+---
+title: "R for Improvers (Script 3): Joining (merging) data frames"
+author: Axel Nohturfft (anohturf@sgul.ac.uk)
+date: "`r Sys.Date()`"
+output:
+  html_notebook:
+    code_folding: 'no'
+    fig_caption: yes
+    highlight: tango
+    number_sections: no
+    theme: sandstone
+    toc: yes
+    toc_depth: 3
+    toc_float: no
+---
+
+**_Please follow the instructions in the README file before starting this tutorial._**
+
+## Objectives  
+
+(1) This part of the workshop focuses on how to merge (join) data frames  
+(2) And we will practise techniques learned earlier (reshaping and manipulating data frames)  
+
+## Setup  
+```{r chunk options, include=FALSE}
+# setting rmarkdown options
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r clean up memory}
+# clear all variables that might be stored from a previous analysis:
+rm(list=ls(all=T))
+```
+
+```{r packages, message=FALSE}
+# load packages
+library(magrittr)
+# help(package="magrittr")
+library(readr)
+# help(package="readr")
+library(dplyr)
+# help(package="dplyr")
+library(tidyr)
+# help(package="tidyr")
+library(stringr)
+# help(package="stringr")
+library(ggplot2)
+# help(package="ggplot2")
+```
+
+## Merging / joining data frames  
+
+* A very common task. One example would be to have two tables: one with gene symbols and expression data, and another with the gene symbols and gene names - your goal would be to add the gene names to expression data.  
+* In general programming parlance people refer to this manipulation as performing a _**join**_.  
+* The function we use in base R is `merge()`.  
+* The 'dplyr' package also provides a number of join function that work well with magrittr pipes and other tidyverse functions.  
+
+Here, let's go back to our exam files from the first script...  
+
+### Step 1: Load the blueprint file and select the relevant columns  
+```{r open blueprint, message=FALSE}
+csv.file <- "data/OSPE_Blueprint.csv"
+stopifnot(file.exists(csv.file))
+df.blueprint <- readr::read_csv(file=csv.file, col_names = TRUE, comment = "#") %>% 
+  dplyr::select(Question, Correct_Answer)
+print(df.blueprint)
+```
+
+### Step 2: Load the file with the student answers  
+
+* __Note__  
+* that the answer data include a question/column (OSPE6) for which there is no match in the blueprint table loaded above.  
+* and that the blueprint data included a question (OSPE5) for which there is no match in the results table.  
+
+```{r open tsv, message=FALSE}
+tsv.file <- "data/OSPE_Results_Raw.tsv"
+stopifnot(file.exists(tsv.file))
+df.results <- readr::read_tsv(file=tsv.file, col_names = TRUE, comment = "#")
+print(df.results)
+```
+
+### Step 3: Reshape student answers into 'tidy' (long) format  
+```{r}
+results.long <- tidyr::pivot_longer(df.results, -Cand.No, names_to = "Question", values_to = "Answer")
+print(results.long)
+```
+
+### Step 4: Merge results and blueprint  
+```{r}
+df.merged <- merge(x=results.long, y=df.blueprint, by="Question", all.x=FALSE, all.y=FALSE) %>% 
+  dplyr::select(Cand.No, everything()) %>% 
+  dplyr::arrange(Cand.No, desc(Question))
+print(df.merged)
+```
+
+**Note that the merged table above contains no rows for OSPE5 or OSPE6.** By default, the `merge()` function will only include data for which it finds matches in *both* tables. This is also called an **INNER JOIN**. Decisions as to whether include all rows from one or both input tables is set by the `all.x` and `all.y` arguments to the `merge()` function.  
+
+To illustrate the different options, let's focus on just one of the candidates (1001):  
+
+**INNER JOIN** - Include only matches from both tables:
+```{r}
+merge(x=results.long, y=df.blueprint, by="Question", all.x=FALSE, all.y=FALSE) %>% 
+  dplyr::select(Cand.No, everything()) %>% 
+  dplyr::filter(Cand.No == 1001) %>% 
+  dplyr::arrange(Question)
+```
+
+**LEFT JOIN** - Include all data from table 1 (`all.x=TRUE`), only matching rows from table 2 (`all.y=FALSE`):
+```{r}
+merge(x=results.long, y=df.blueprint, by="Question", all.x=TRUE, all.y=FALSE) %>% 
+  dplyr::select(Cand.No, everything()) %>% 
+  dplyr::filter(Cand.No == 1001) %>% 
+  dplyr::arrange(Question)
+```
+
+**RIGHT JOIN** - Include all data from table 2 (`all.y=TRUE`), only matching rows from table 1 (`all.x=FALSE`):
+```{r}
+merge(x=results.long, y=df.blueprint, by="Question", all.x=FALSE, all.y=TRUE) %>% 
+  dplyr::select(Cand.No, everything()) %>% 
+  dplyr::filter(Cand.No %in% c(1001, NA)) %>%
+  dplyr::arrange(Question)
+```
+
+**OUTER JOIN** - Include all data from table 1 (`all.x=TRUE`), and all data from table 2 (`all.y=TRUE`):
+```{r}
+merge(x=results.long, y=df.blueprint, by="Question", all.x=TRUE, all.y=TRUE) %>% 
+  dplyr::select(Cand.No, everything()) %>% 
+  dplyr::filter(Cand.No %in% c(1001, NA)) %>%
+  dplyr::arrange(Question)
+```
+
+### Step 5: "Mark" the answers  
+```{r}
+df.marked <- df.merged %>% 
+  dplyr::mutate(Answer_Correct = (Answer == Correct_Answer))
+print(df.marked)
+```
+
+
+## EXERCISE  
+
+The file `data/Tailleux_TB_MP.csv` contains some microarray-based gene expression data from MTb-infected macrophages for 50 gene probes and 2 time points (0 and 48 hrs). The expression data are log(2) values. (Data from [Tailleux et al., 2008](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0001403))
+
+The file `data/ID_Symol.csv` lists the corresponding gene symbols for the probe IDs on the microarray chip that was used.
+
+(1) Add the correct gene symbols to the table with gene expression data.  
+(2) Calculate the fold change of expression, comparing 48 versus 0 hours.  
+(3) Calculate the maximum fold change for each gene (symbol)  
+
+### Step 1: load expression data
+```{r expression data, message=FALSE}
+ex <- readr::read_csv("data/Tailleux_TB_MP.csv")
+ex
+```
+
+### Step 2: load symbol key
+```{r symbol key, message=FALSE}
+key <- readr::read_csv("data/ID_Symol.csv")
+key
+```
+
+### Step 3: merge data frames on 'ID' columns
+```{r merge, message=FALSE}
+ex.sym <- merge(x=ex, y=key, by="ID") %>% 
+  dplyr::select(ID, Symbol, everything())
+ex.sym
+```
+
+### Step 4: Calculate fold change
+```{r fold change, message=FALSE}
+fc <- ex.sym %>% 
+  dplyr::mutate(fc = t48 - t0)
+fc
+```
+
+### Aggregate by gene symbol
+```{r}
+fc.aggr <- fc %>% 
+  dplyr::group_by(Symbol) %>% 
+  dplyr::summarise(Probe.Count = dplyr::n(),
+                   Min.fc = min(fc),
+                   Max.fc = max(fc),
+                   Mean.fc = mean(fc)) %>%
+  dplyr::arrange(Symbol)
+fc.aggr
+```
+
+## Session info  
+```{r}
+sessionInfo()
+```
+
+
