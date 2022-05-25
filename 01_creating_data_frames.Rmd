@@ -27,14 +27,14 @@ knitr::opts_chunk$set(echo = TRUE)
 Key concepts you should be familiar with:  
 
 1. Data are stored in named _**variables**_. We manipulate and analyse data by referring to variables.  
-2. Data are analysed and manipulate using _**functions**_. Functions have a name that is followed by brackets. Pieces of information required by a function (data, parameters) are typed between the brackets and are called a function's _**arguments**_.  
+2. Data are analysed and manipulated using _**functions**_. Functions have a name that is followed by brackets. Pieces of information required by a function (data, parameters) are typed between the brackets and are called a function's _**arguments**_.  
 3. Many additional functions are available from _**packages**_ available on [CRAN](https://cran.r-project.org/), [Bioconductor](https://www.bioconductor.org/).  
 3. The most common _**data types**_ are numbers, text and boolean.  
 4. Common _**data structures**_ in R include scalars, vectors, matrices and data frames.  
 
 
 
-## Introduction  
+## Introduction: data frames.   
 
 * Data frames are the most common data structure used in R.  
 * They are essentially similar to an Excel table, except that in a given column each value has to be of the same data type (e.g. character/text, numeric, logical/boolean). But different columns in one data frame can be of a different type.  
