@@ -141,7 +141,7 @@ print(df.marked)
 
 The file `data/Tailleux_TB_MP.csv` contains some microarray-based gene expression data from MTb-infected macrophages for 50 gene probes and 2 time points (0 and 48 hrs). The expression data are log(2) values. (Data from [Tailleux et al., 2008](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0001403))
 
-The file `data/ID_Symol.csv` lists the corresponding gene symbols for the probe IDs on the microarray chip that was used.
+The file `data/ID_Symbol.csv` lists the corresponding gene symbols for the probe IDs on the microarray chip that was used.
 
 (1) Add the correct gene symbols to the table with gene expression data.  
 (2) Calculate the fold change of expression, comparing 48 versus 0 hours.  
@@ -149,40 +149,27 @@ The file `data/ID_Symol.csv` lists the corresponding gene symbols for the probe 
 
 ### Step 1: load expression data
 ```{r expression data, message=FALSE}
-ex <- readr::read_csv("data/Tailleux_TB_MP.csv")
-ex
+# solution here
 ```
 
 ### Step 2: load symbol key
 ```{r symbol key, message=FALSE}
-key <- readr::read_csv("data/ID_Symol.csv")
-key
+# solution here
 ```
 
 ### Step 3: merge data frames on 'ID' columns
 ```{r merge, message=FALSE}
-ex.sym <- merge(x=ex, y=key, by="ID") %>% 
-  dplyr::select(ID, Symbol, everything())
-ex.sym
+# solution here
 ```
 
 ### Step 4: Calculate fold change
 ```{r fold change, message=FALSE}
-fc <- ex.sym %>% 
-  dplyr::mutate(fc = t48 - t0)
-fc
+# solution here
 ```
 
 ### Aggregate by gene symbol
 ```{r}
-fc.aggr <- fc %>% 
-  dplyr::group_by(Symbol) %>% 
-  dplyr::summarise(Probe.Count = dplyr::n(),
-                   Min.fc = min(fc),
-                   Max.fc = max(fc),
-                   Mean.fc = mean(fc)) %>%
-  dplyr::arrange(Symbol)
-fc.aggr
+# solution here
 ```
 
 ## Session info  
