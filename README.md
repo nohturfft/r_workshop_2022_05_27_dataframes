@@ -33,7 +33,7 @@ If you are offsite, you might need to first connect to [mydesktop](mydesktop.sgu
 ### Install packages  
 
 We will be using a number of different R packages.  
-Please install these by running the following code from the command prompt (note: _**tidyverse includes 26 packages in total; so the installation may take a few minutes**_):  
+Please install these by running the following code from the command prompt:  
 
 ```
 if (!require(magrittr)) install.packages("magrittr")
