@@ -109,20 +109,6 @@ phosphate <- readr::read_csv("data/phosphate_b.csv")
 print(phosphate)
 ```
 
-```{r results='asis'}
-head(phosphate) %>% as.data.frame
-```
-
-
-```{r}
-p2 <- phosphate %>% 
-  dplyr::rename(Patient = "X1") %>% 
-  dplyr::rename(Group = "group") %>% 
-  tidyr::pivot_longer(-c("Patient", "Group"), names_to = "Time", values_to = "Phosphate")
-p2
-```
-
-
 ### Step 2: The first column contains just row numbers, so we can remove it:
 ```{r}
 phosphate.2 <- phosphate %>% 
