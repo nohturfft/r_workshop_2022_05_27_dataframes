@@ -99,7 +99,7 @@ df.pcr <- readxl::read_xlsx(path=xl.file, sheet="Sheet1", col_names = T, range =
 # If you get a strange error, make sure no rows or columns are hidden in the Excel file
 ```
 
-To view the contents of the newly created data frame click on 'df.pcr' in the RStudio Environment window. If you then look at the console, you will see that RStudio responded by running the `View(df.pcr)` command. You can copy and paste that into your script if you would like to do this computationally in the future. Note that this output would not appear in the markdown output.  
+To view the contents of the newly created data frame click on 'df.pcr' in the RStudio Environment window. If you then look at the console, you will see that RStudio responded by running the `View(df.pcr)` command. You can copy and paste that into your script if you would like to do this computationally in the future. Note that the output produced by the `View()` command would not appear in the markdown output.  
 
 ### Read data from a local tsv file  
 * TSV stands for 'tab-separated values'.  
@@ -134,16 +134,12 @@ All we have to do is use the internet file URL instead of a local file path as a
 ```{r load covid19, message=FALSE}
 url.jh <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/",
                  "csse_covid_19_data/csse_covid_19_time_series/",
-                 # "time_series_covid19_deaths_global.csv",
                  "time_series_covid19_confirmed_global.csv")
 df.jh.raw <- readr::read_csv(url.jh)
 ```
 
-
 ```{r}
 head(df.jh.raw)
-write.table(df.jh.raw, sep="\t", file = "covid19_data_uk_raw.txt", row.names = F, col.names = T)
-
 ```
 
 
@@ -198,6 +194,7 @@ My favourite is usually the `datatable` function from the DT package:
 * there is an option to add hyperlinks to table text  
 * the package provides a very large number of customization options  
 * run `help(package="DT")` for access to more information  
+
 ```{r}
 DT::datatable(df.blueprint)
 ```
